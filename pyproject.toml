@@ -1,0 +1,15 @@
+[project]
+name = "data-product-complexity-tool"
+version = "0.1.0"
+description = "Generate an Excel workbook from a YAML spec for data product complexity assessment"
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+dependencies = [
+    "pandas",
+    "openpyxl",
+    "pyyaml",
+    "pandas"
+]
+requires-python = ">=3.8"
+
+[tool.uv]
+# optional uv settings (e.g. for caching or virtualenvs)
