@@ -2,6 +2,7 @@ data_product_complexity:
 - category: Stakeholder/Org complexity
   questions:
   - question: Number/diversity of stakeholders
+    questionType: DropDown
     description: How many and how varied the stakeholders are
     options:
     - Only a few/easily identified stakeholders

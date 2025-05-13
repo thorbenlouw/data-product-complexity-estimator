@@ -2,14 +2,21 @@
 name = "data-product-complexity-tool"
 version = "0.1.0"
 description = "Generate an Excel workbook from a YAML spec for data product complexity assessment"
-authors = [{ name = "Your Name", email = "your.email@example.com" }]
+authors = [{ name = "Thorben Louw", email = "thorben.louw@equalexperts.com" }]
 dependencies = [
     "pandas",
     "openpyxl",
     "pyyaml",
-    "pandas"
+    "cerberus"
 ]
 requires-python = ">=3.8"
 
-[tool.uv]
-# optional uv settings (e.g. for caching or virtualenvs)
+[tool.setuptools]
+packages = ["data_product_complexity"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+data-product-complexity = "data_product_complexity.cli:main"

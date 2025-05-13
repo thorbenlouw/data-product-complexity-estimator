@@ -1,7 +1,4 @@
-import re
-
 import pandas as pd
-import yaml
 from openpyxl import Workbook, load_workbook
 from openpyxl.formatting.rule import CellIsRule, ColorScaleRule
 from openpyxl.styles import Font, PatternFill
@@ -10,10 +7,8 @@ from openpyxl.utils import (column_index_from_string, get_column_letter,
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.worksheet import Worksheet
 
+import re
 
-def load_questionnaire(yaml_path):
-    with open(yaml_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
 
 
 def sanitize_sheet_name(name):
@@ -329,9 +324,3 @@ def write_excel_from_yaml(questionnaire, output_path):
     wb.save(output_path)
 
 
-if __name__ == "__main__":
-    yaml_path = "full_data_product_complexity_questionnaire.yaml"
-    output_path = "data_product_complexity_tool.xlsx"
-    questionnaire = load_questionnaire(yaml_path)
-    write_excel_from_yaml(questionnaire, output_path)
-    print(f"Excel workbook created at: {output_path}")
