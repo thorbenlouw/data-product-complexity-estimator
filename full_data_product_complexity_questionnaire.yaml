@@ -1,349 +1,317 @@
 data_product_complexity:
-- category: Stakeholder/Org complexity
-  questions:
-  - question: Number/diversity of stakeholders
-    description: How many and how varied the stakeholders are
-    options:
-    - Only a few/easily identified stakeholders
-    - Many different stakeholders
-    - Not sure
-  - question: Stakeholder availability
-    description: How available or identifiable the stakeholders are
-    options:
-    - No problem identifying stakeholders and they exist in the business
-    - Some stakeholders have left and there are SME gaps
-    - No idea who our stakeholders are or they are no longer present
-    - Not sure
-  - question: Stakeholder engagement
-    description: How engaged stakeholders are and ease of access
-    options:
-    - We can get time and engagement from our stakeholders
-    - Sometimes engagement from stakeholders is difficult/insufficient
-    - Access to our stakeholders is a real problem
-    - Not sure
-- category: Source complexity
-  questions:
-  - question: Number of sources
-    description: How many upstream data sources exist
-    options:
-    - only 1
-    - 1-3
-    - more than 3 source systems/data products make up this data product
-    - Not sure
-  - question: Requires new sources to be integrated
-    description: Whether new data sources need to be added
-    options:
-    - only using existing sources
-    - some new sources
-    - many new sources to integrate
-    - Not sure
-  - question: Sources are CDC
-    description: Are sources change data capture (CDC)?
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-  - question: Our product builds on PDPV1 implementations
-    description: Whether this builds on older PDPV1 implementations
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-  - question: Access to source system SME
-    description: Availability of subject matter experts for source systems
-    options:
-    - Full access to SME that understands the source
-    - Only occasional access
-    - No SME available
-    - Not sure
-  - question: How hard is it to understand the source system?
-    description: Complexity and documentation of source systems
-    options:
-    - Well documented and understood
-    - Partial understanding and documentation
-    - Complex/obscure with no docs
-    - Not sure
-  - question: New integration pattern
-    description: Whether this reuses or introduces new integration patterns
-    options:
-    - Reusing an existing approved integration pattern e.g. Informatica/APIs
-    - Is a tweak of an existing pattern
-    - Is a totally new pattern that needs arch approval
-    - Not sure
-  - question: Uses Ab Initio sources?
-    description: Whether Ab Initio data sources are used
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-  - question: Volume
-    description: Estimated data volume within the first year
-    options:
-    - Will have 1-20GiB of data within a year
-    - 20-1TiB in a year
-    - 1-50TiB of data in a year
-    - '>50TiB of data in a year'
-    - Not sure
-  - question: Velocity
-    description: Frequency or streaming nature of incoming data
-    options:
-    - Daily batch
-    - Intra-day batches
-    - Streaming
-    - Not sure
-  - question: Late arriving or out-of-order data
-    description: Stability and timeliness of incoming data
-    options:
-    - Data is always on time and stable
-    - Sometimes missing or late
-    - Often missing or late/out of order
-    - Not sure
-- category: Modelling complexity
-  questions:
-  - question: Data Vault dismantling
-    description: Whether a Data Vault model is in place and needs to be dismantled
-    options:
-    - No Data Vault
-    - Some implementation started but not a lot to redo
-    - Raw/Business Vault built and needs to be dismantled
-    - Not sure
-  - question: Historised values
-    description: Whether historical dimension changes (e.g., SCD2) need to be tracked
-    options:
-    - No, only latest snapshot ever needed
-    - Some tracking of history of values in data needed over time
-    - Need to keep history of changes to dimension values (“SCD2”)
-    - Not sure
-  - question: PLDM readiness
-    description: Whether the PLDM model is defined and agreed
-    options:
-    - PLDM modelling done and agreed already/concepts exist
-    - Some modelling
-    - Totally new modelling to be done and approved
-    - Not sure
-  - question: Understanding of how it will be consumed
-    description: Clarity on data consumption and modeling requirements
-    options:
-    - Clear requirements how things need to be modelled for consumers
-    - Some indication based on use cases
-    - No idea how this data needs to be consumed or a wide variety of use cases
-    - Not sure
-- category: Implementation complexity
-  questions:
-  - question: Paved Road fit
-    description: Whether the implementation fits current platform capabilities
-    options:
-    - Fits perfectly in currently delivered functionality
-    - Fits but needs some new features or changes
-    - Needs to be crazy paved
-    - Not sure
-  - question: New platform capabilities required
-    description: Whether new tools or frameworks are needed
-    options:
-    - All platform features already available
-    - Some new tools or frameworks needed
-    - Needs very different platform capabilities from today
-    - Not sure
-  - question: Involves decommissioning of PDP V1 product
-    description: Whether an existing PDP V1 product needs to be retired
-    options:
-    - No, is new PDPV2 only
-    - Yes need to decommission a PDPV1 product and replace with PDPV2
-    - Not sure
-  - question: Inherited tech debt complexity
-    description: How much technical debt the team inherits
-    options:
-    - Greenfields
-    - Some existing tech debt
-    - Lots of tech debt to unpick and manage
-    - Not sure
-  - question: Automation applicability
-    description: Whether automation tools are applicable and available
-    options:
-    - Automation tooling/frameworks exist
-    - Some tools to help
-    - No automation available
-    - Not sure
-  - question: Tooling applicable and available
-    description: Whether the chosen stack supports the implementation
-    options:
-    - Fits in existing stack
-    - Needs some different tools
-    - Completely different
-    - Not sure
-  - question: Infrastructure deps
-    description: Level of infrastructure dependencies
-    options:
-    - No dependency on cloud team
-    - Some additional custom infrastructure
-    - Need cloud/networking team
-    - Not sure
-  - question: Streaming vs batch
-    description: Type of processing required
-    options:
-    - Batch
-    - Medium-latency streaming or micro-batch needed
-    - Real-time needed
-    - Not sure
-  - question: Data contract complex
-    description: Complexity of the data interface
-    options:
-    - Simple interface
-    - Mostly simple interfaces
-    - Many different interfaces
-    - Not sure
-- category: Compliance / Governance / Infosec complexity
-  questions:
-  - question: Has Personally Identifiable Information in data
-    description: Whether the data contains PII
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-  - question: Has confidential/secret data?
-    description: Whether the data contains business secrets or restricted info
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-  - question: Complexity of classifying data
-    description: How hard it is to classify the data properly
-    options:
-    - We can easily classify
-    - We need help/other tooling for this datasety
-    - Not sure
-  - question: DPISO?
-    description: Status of the Data Privacy and Security Assessment
-    options:
-    - Not needed
-    - One exists already
-    - Still need to engage and get DPISO
-    - Not sure
-  - question: New supplier relationship?
-    description: Whether data is from new or existing third-party suppliers
-    options:
-    - Existing supplier
-    - New 3rd party supplier
-    - Potentially many new supplier relationships
-    - Not sure
-  - question: New infosec pattern
-    description: Whether new information security approvals are needed
-    options:
-    - Only existing approved patterns
-    - Variations on existing
-    - Totally new infosec assessments
-    - Not sure
-  - question: EDI scanning needed?
-    description: Need for malware/DLP scanning of incoming data
-    options:
-    - No - agreed
-    - Some scanning
-    - Yes - all source data needs scan
-    - Not sure
-- category: Consumption complexity
-  questions:
-  - question: We need to build a Tableau certified source
-    description: Whether a certified Tableau data source must be delivered
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-  - question: Number of consumer personas
-    description: How many types of data consumers must be supported
-    options:
-    - Only 1
-    - 1-3
-    - '>3'
-    - Not sure
-  - question: Users and Use Cases well understood
-    description: Clarity of user needs and use cases
-    options:
-    - Clear requirements
-    - Some known use cases
-    - Need to be flexible
-    - Not sure
-  - question: User training complexity
-    description: Level of training and enablement required
-    options:
-    - No training required
-    - Will need to support sometimes
-    - Formal training needed
-    - Not sure
-- category: Visualisation complexity
-  questions:
-  - question: Complex / Custom UI
-    description: Type and complexity of required visualizations
-    options:
-    - No viz
-    - Simple tableau visualisations
-    - Custom or complex viz
-    - Not sure
-  - question: Streamlit app?
-    description: Whether a custom Streamlit application is required
-    options:
-    - No App
-    - Yes is a custom app
-    - Not sure
-  - question: Needs custom user research/UX?
-    description: Whether UX research and design is needed
-    options:
-    - 'No'
-    - 'Yes'
-    - Not sure
-- category: Data Quality complexity
-  questions:
-  - question: Complex data validation requirements
-    description: Depth of data validation and testing needed
-    options:
-    - Simple expectations
-    - Complex inter-field tests
-    - Correctness guarantees needed for business-critical reasons (e.g. compliance)
-    - Not sure
-  - question: Complex pipeline verification requirements
-    description: Complexity of ensuring pipeline correctness
-    options:
-    - Simple unit tests
-    - Unit and integration tests
-    - Manual verification needed
-    - Not sure
-  - question: Custom tests that don’t fit into framework
-    description: Need for custom testing frameworks or tools
-    options:
-    - Our tests fit framework
-    - Need new tool or custom code
-    - Not sure
-- category: Dependency complexity
-  questions:
-  - question: Dependency on other teams
-    description: Need for support from other engineering teams
-    options:
-    - No dependency
-    - Only dependent on source teams
-    - Dependent on source and platform/other teams
-    - Not sure
-  - question: Dependency on other data products
-    description: Need for data from other products or domains
-    options:
-    - 'No'
-    - Yes but only our own products
-    - Yes and others from other domains
-    - Not sure
-  - question: Dependency on tech modernisation
-    description: Impact from the tech modernisation programme
-    options:
-    - No we are unaffected
-    - Yes we are impacted
-    - Not sure
-  - question: Dependency on cloud teams
-    description: Need for cloud or infrastructure team involvement
-    options:
-    - No dependency
-    - Yes we do have a dependency
-    - Not sure
-  - question: Dependency on 3rd party consumption testing
-    description: Dependency on UAT from 3rd parties or external teams
-    options:
-    - No dependency outside team
-    - Yes but internal JL team
-    - Yes 3rd party outside JL
-    - Not sure
+formTitle: Data Product Complexity Questionaire
+sections:
+  - section: Data Product Information
+    questions:
+    - question: What is the data product name?
+      questionType: ShortAnswer
+    - question: What is the Value Stream?
+      description: Choose the most appropriate value stream from the values stream
+      questionType: DropDown
+      options:
+      - P1
+      - FS 
+      - W1 
+      - W2 
+      - W3
+      - W4
+      - J1
+      - J2
+      - J3
+      - SCA1
+      - SCA2
+    - question: What data tiers does this data product impact?
+      description: please indicate all effected tiers
+      questionType: CheckBox
+      options:
+      - Raw
+      - Conform
+      - Consume
+      - Not sure
+  - section: Stakeholders and organisation 
+    questions:
+    - question: Are stakeholders identified? 
+      description: Indicate if the data product consuming stakeholder(s) are identified 
+      questionType: DropDown
+      options:
+      - No problem identifying stakeholders and they exist in the business
+      - Some stakeholders have left and there are SME gaps
+      - No idea who our stakeholders are or they are no longer present
+      - Not sure
+    - question: Number/diversity of stakeholders
+      description: How many and how varied the stakeholders are
+      questionType: DropDown
+      options:
+      - Only a few/easily identified stakeholders
+      - Many different stakeholders
+      - Not sure
+    - question: Stakeholder availability and engagement
+      description: How engaged stakeholders are and ease of access
+      questionType: DropDown
+      options:
+      - We can get time and engagement from our stakeholders
+      - Sometimes engagement from stakeholders is difficult/insufficient
+      - Access to our stakeholders is a real problem
+      - Not sure
+  - section: Source Data 
+    questions:
+    - question: How many upstream data sources (data products and/or source systems) does this data product depend on?
+      description: Provide the a numerical estimate  
+      questionType: ShortAnswer
+    - question: Do new sources need to be integrated and landed in the data platform?
+      description: Chose the most appropraite option
+      questionType: DropDown  
+      options:
+      - only needs existing sources in raw
+      - some new sources need to be integrated
+      - many new sources to integrate
+      - Not sure
+    - question: Our product builds on PDPV1 implementations
+      description: Whether this builds on older PDPV1 implementations
+      questionType: DropDown 
+      options:
+      - 'No'
+      - 'Yes'
+      - Not sure
+    - question: Access to source system SME
+      description: Availability of subject matter experts for source systems
+      questionType: DropDown 
+      options:
+      - Full access to SME that understands the source
+      - Only occasional access
+      - No SME available
+      - Not sure
+    - question: Are the source data/systems on which this data product depends well understood/clear knowledge?  
+      description: Knoweldge of the source data dependencies impacts the classification and modelling for the data product
+      questionType: DropDown 
+      options:
+      - Well documented and understood
+      - Partial understanding and documentation
+      - Complex/obscure with little information
+      - Not sure
+    - question: New integration pattern
+      description: Whether this reuses or introduces new integration patterns
+      questionType: DropDown 
+      options:
+      - Reusing an existing approved integration pattern e.g. Informatica/APIs
+      - Is a tweak of an existing pattern
+      - Is a totally new pattern that needs arch approval
+      - Not sure
+    - question: Please select all applicable source integration technologies
+      description: 
+      questionType: CheckBox 
+      options:
+      - Informatica CDC
+      - Ab Initio
+      - Other
+    - question: Velocity
+      description: Frequency or streaming nature of incoming data
+      questionType: DropDown 
+      options:
+      - Daily batch
+      - Intra-day batches
+      - Streaming
+      - Not sure
+    - question: What is the volume of records (rows) that are typically updated per day?
+      description: Capture the estimated data volume, for example 3000, or 5000000 
+      questionType: ShortAnswer 
+    - question: Is the source data correctly sequenced and ordered?
+      description: Stability and timeliness of incoming data
+      questionType: DropDown 
+      options:
+      - Data is always on time and stable
+      - Sometimes missing or late
+      - Often missing or late/out of order
+      - Not sure
+  - section: Data governance and information security
+    questions:
+    - question: Is there Personally Identifiable Information in the source data?
+      description: Whether the data contains PII
+      questionType: DropDown
+      options:
+      - 'No'
+      - 'Yes'
+      - Not sure
+    - question: Is there confidential or secret data?
+      description: Whether the data contains business secrets or restricted info
+      options:
+      - 'No'
+      - 'Yes'
+      - Not sure
+    - question: Does this data product require DPISO?
+      description: Status of the Data Privacy and Security Assessment
+      options:
+      - Not needed
+      - One exists already
+      - A new DPISO is required
+      - Not sure
+    - question: New supplier relationship?
+      description: Whether data is from new or existing third-party suppliers
+      options:
+      - Existing supplier
+      - New 3rd party supplier
+      - Potentially many new supplier relationships
+      - Not sure
+    - question: New infosec pattern
+      description: Whether new information security approvals are needed
+      options:
+      - Only existing approved patterns
+      - Variations on existing
+      - Totally new infosec assessments
+      - Not sure
+    - question: EDI scanning needed?
+      description: Need for malware/DLP scanning of incoming data
+      options:
+      - No - agreed
+      - Some scanning
+      - Yes - all source data needs scan
+      - Not sure
+  - section: Data Modelling
+    questions:
+    - question: Does the data product depend on the Data Vault?
+      description: Whether a Data Vault model is in place and needs to be dismantled
+      questionType: DropDown
+      options:
+      - No Data Vault
+      - Some implementation started but not a lot to redo
+      - Raw/Business Vault built and needs to be dismantled
+      - Not sure
+    - question: Do records changes need to be tracked (historised)?
+      description: Do historical dimension changes (e.g., SCD2) need to be tracked
+      questionType: DropDown
+      options:
+      - No, only latest snapshot ever needed
+      - Some tracking of history of values in data needed over time
+      - Need to keep history of changes to dimension values (“SCD2”)
+      - Not sure
+    - question: Does the data product depend on conformed model (PLDM)?  
+      description: Select the most appropriate option
+      questionType: DropDown
+      options:
+      - PLDM model is defined in conformed tier and agreed  
+      - Some refinment/iteration needed
+      - Totally new modelling to be done and approved
+      - Not sure
+  - section: Dependencies 
+    questions:
+    - question: Are the dependency on other data products?
+      description: Need for data from other products or domains
+      questionType: DropDown
+      options:
+      - 'No'
+      - Yes but only our own products
+      - Yes and others from other domains
+      - Not sure
+    - question: Does Tech Modernisation have an impact on our data sources/systems?
+      description: Impact from the tech modernisation programme
+      questionType: DropDown
+      options:
+      - No impact
+      - Some impact
+      - Major impact
+      - Not sure
+    - question: Dependency on 3rd party consumption testing
+      description: Dependency on UAT from 3rd parties or external teams
+      questionType: DropDown
+      options:
+      - No dependency outside team
+      - Yes but internal JL team
+      - Yes 3rd party outside JL
+      - Not sure
+  - section: Consumption and Visualisation
+    questions:
+    - question: How many consumer personas are supported by this data product?
+      description: How many types of data consumers must be supported.  For example
+      questionType: DropDown  
+      options:
+      - Only 1
+      - 2-3
+      - '>3'
+      - Not sure
+    - question: Are there clear consumption requirements for the data product?
+      description: Clarity on data consumption and modeling requirements
+      questionType: DropDown
+      options:
+      - Clear requirements how things need to be modelled for consumers
+      - Some indication based on use cases
+      - No idea how this data needs to be consumed or a wide variety of use cases
+      - Not sure  
+    - question: Do we need to build a Tableau certified source(s)
+      description: Whether a certified Tableau data source must be delivered
+      questionType: DropDown
+      options:
+      - 'No'
+      - 'Yes'
+      - Not sure
+    - question: What is the visualisation complexity of the data product?
+      description: Please indicate Type and complexity of required visualizations
+      options:
+      - No visualasation required 
+      - Simple tableau visualisations
+      - Custom or complex dashboards
+      - Custom Streamlit app
+      - Not sure
+    - question: Needs custom user research/UX?
+      description: Whether UX research and design is needed
+      options:
+      - 'No'
+      - 'Yes'
+      - Not sure
+  - section: Implementation
+    questions:
+    - question: Are new data platform capabilities required to satify this data product?
+      description: Whether new tools or frameworks are needed
+      questionType: DropDown
+      options:
+      - All platform features already available
+      - Some new tools or frameworks needed
+      - Needs very different platform capabilities from today
+      - Not sure
+    - question: Does a v1 data product need to be decommissioned?
+      description: Whether an existing PDP V1 product needs to be retired
+      questionType: DropDown
+      options:
+      - No, is new PDPV2 only
+      - Yes need to decommission a PDPV1 product and replace with PDPV2
+      - Not sure
+    - question: Is there inherited tech debt complexity?
+      description: Consider Data Vault or legacy ingestion pipelines in your a  
+      questionType: DropDown
+      options:
+      - Greenfield implementation
+      - Some existing tech debt
+      - Lots of tech debt to unpick and manage
+      - Not sure
+    - question: Automation applicability
+      description: Whether automation tools are applicable and available
+      questionType: DropDown
+      options:
+      - Automation tooling/frameworks exist
+      - Some tools to help
+      - No automation available
+      - Not sure
+    - question: Tooling applicable and available
+      description: Whether the chosen stack supports the implementation
+      questionType: DropDown
+      options:
+      - Fits in existing stack
+      - Needs some different tools
+      - Completely different
+      - Not sure
+    - question: Streaming vs batch
+      description: Type of processing required
+      questionType: DropDown
+      options:
+      - Batch
+      - Medium-latency streaming or micro-batch needed
+      - Real-time needed
+      - Not sure
+    - question: Data contract complex
+      description: Complexity of the data interface
+      questionType: DropDown
+      options:
+      - Simple interface
+      - Mostly simple interfaces
+      - Many different interfaces
+      - Not sure
+   
