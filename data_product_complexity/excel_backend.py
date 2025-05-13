@@ -6,6 +6,8 @@ from openpyxl.utils import (column_index_from_string, get_column_letter,
                             range_boundaries)
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.chart import BarChart, Reference
+from openpyxl.chart.layout import Layout, ManualLayout
 
 import re
 
@@ -30,14 +32,17 @@ def populate_score_sheet(wb, question_formulas):
     ws_score.cell(row=1, column=2).font = Font(bold=True)
 
     for category in question_formulas.keys():
-        ws_score.cell(row=row, column=1, value=category)
-        for qidx, question in enumerate(question_formulas[category]):
-            tmp_cell = ws_score.cell(row=row, column=3 + qidx)
-            tmp_cell.value = question_formulas[category][qidx]
-            print(question_formulas[category][qidx])
-        avg_formula = f"=ROUND(1 + 4 * AVERAGE(C{row}:{get_column_letter(len(question_formulas[category])+3)}{row}), 0)"
-        ws_score.cell(row=row, column=2).value = avg_formula
-        row += 1
+        if category == "Data Product Information":
+            pass
+        else:
+            ws_score.cell(row=row, column=1, value=category)
+            for qidx, question in enumerate(question_formulas[category]):
+                tmp_cell = ws_score.cell(row=row, column=3 + qidx)
+                tmp_cell.value = question_formulas[category][qidx]
+                # print(question_formulas[category][qidx])
+            avg_formula = f"=INT(AVERAGE(C{row}:{get_column_letter(len(question_formulas[category])+3)}{row}) * 5) + 1"
+            ws_score.cell(row=row, column=2).value = avg_formula
+            row += 1
 
     # Apply heatmap conditional formatting to column B
     heatmap = ColorScaleRule(
@@ -58,6 +63,35 @@ def populate_score_sheet(wb, question_formulas):
 
     for col_letter in [get_column_letter(x) for x in range(3, 30)]:
         ws_score.column_dimensions[col_letter].hidden = True
+
+
+    chart = BarChart()
+    chart.type = "bar"
+    chart.style = 10  # Excel predefined chart style
+    chart.title = "Data Product Complexity Scores"
+    chart.y_axis.title = "Sections"
+    chart.x_axis.title = "Score"
+    chart.y_axis.majorGridlines = None  # Optional: remove vertical gridlines
+    chart.x_axis.majorGridlines = chart.x_axis.majorGridlines  # Ensures horizontal gridlines are visible
+
+    # Reference data
+    data_ref = Reference(ws_score, min_col=2, min_row=1, max_row=8)
+    categories_ref = Reference(ws_score, min_col=1, min_row=2, max_row=8)
+
+    chart.add_data(data_ref, titles_from_data=True)
+    chart.set_categories(categories_ref)
+
+    # Layout to roughly center chart (H1 is a good anchor)
+    chart.layout = Layout(
+        manualLayout=ManualLayout(
+            x=0.25, y=0.1, h=0.6, w=0.5,  # Adjust for position and size
+            xMode="factor", yMode="factor",
+            hMode="factor", wMode="factor"
+        )
+    )
+
+    # === Step 3: Insert Chart into Sheet ===
+    ws_score.add_chart(chart, "H1")  # Center-ish position
 
 
 def apply_font_to_range(wb, range_str, bold=False, italic=False):
@@ -121,9 +155,9 @@ def populate_data_sheets(wb, questionnaire):
     how many questions in a section etc.) 
     """
     for section_index, section in enumerate(
-        questionnaire["data_product_complexity"], start=1
+        questionnaire["data_product_complexity"]["sections"], start=1
     ):
-        category = section["category"]
+        category = section["section"]
         questions = section["questions"]
         sheet_name = sanitize_sheet_name(category)
         ws_data = wb.create_sheet(title=sheet_name)
@@ -218,9 +252,9 @@ def populate_questions_sheet(wb, questionnaire):
     col_indexes = {"q_num": 1, "title": 2, "description": 2, "options": 3}
 
     for section_index, section in enumerate(
-        questionnaire["data_product_complexity"], start=1
+        questionnaire["data_product_complexity"]["sections"], start=1
     ):
-        category = section["category"]
+        category = section["section"]
         question_formulas[category] = []
         data_worksheet_name = sanitize_sheet_name(category)
 

@@ -4,10 +4,9 @@ data_product_complexity:
     - section: Data Product Information
       questions:
         - question: What is the data product name?
-          description: N/A
+          description: A unique identifier for the data product
           questionType: ShortAnswer
         - question: What is the Value Stream?
-          description: N/A
           description: Choose the most appropriate value stream from the values stream
           questionType: DropDown
           options:
@@ -60,6 +59,11 @@ data_product_complexity:
         - question: How many upstream data sources (data products and/or source systems) does this data product depend on?
           description: Provide the a numerical estimate
           questionType: ShortAnswer
+          options: 
+            - Only 1
+            - 1-3
+            - More than 3
+            - Not sure
         - question: Do new sources need to be integrated and landed in the data platform?
           description: Chose the most appropraite option
           questionType: DropDown
@@ -105,7 +109,8 @@ data_product_complexity:
           options:
             - Informatica CDC
             - Ab Initio
-            - Other
+            - Other (or both of these)
+            - Not sure
         - question: Velocity
           description: Frequency or streaming nature of incoming data
           questionType: DropDown
@@ -117,6 +122,12 @@ data_product_complexity:
         - question: What is the volume of records (rows) that are typically updated per day?
           description: Capture the estimated data volume, for example 3000, or 5000000
           questionType: ShortAnswer
+          options:
+            - <1,000
+            - 1,000-10,000
+            - 10,000-100,000
+            - 100,000+
+            - Not sure
         - question: Is the source data correctly sequenced and ordered?
           description: Stability and timeliness of incoming data
           questionType: DropDown

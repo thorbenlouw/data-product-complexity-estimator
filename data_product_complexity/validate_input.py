@@ -80,10 +80,11 @@ def custom_validation(data):
             options = q.get("options")
 
             if q_type == "ShortAnswer":
-                if "options" in q:
-                    errors.append(
-                        f"'options' should not be present for ShortAnswer in question '{q.get('question')}'."
-                    )
+                # if "options" in q:
+                #     errors.append(
+                #         f"'options' should not be present for ShortAnswer in question '{q.get('question')}'."
+                #     )
+                pass
             elif q_type in ["DropDown", "CheckBox"]:
                 if not options:
                     errors.append(
