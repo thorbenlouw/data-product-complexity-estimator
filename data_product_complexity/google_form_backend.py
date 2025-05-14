@@ -45,7 +45,7 @@ def generate_script(config):
     """
     Returns the full Apps Script source as a string, injecting the JSON-ified config.
     """
-    js_config = to_js(config)
+    js_config = to_js(config["data_product_complexity"])
 
     # Use a template for the rest of the code
     template = f"""
@@ -72,17 +72,20 @@ def generate_script(config):
             case 'ShortAnswer':
               form.addTextItem()
                   .setTitle(q.question)
+                  .setRequired(true)
                   .setHelpText(helpText);
               break;
             case 'DropDown':
               form.addListItem()
                   .setTitle(q.question)
+                  .setRequired(true)
                   .setHelpText(helpText)
                   .setChoiceValues(q.options);
               break;
             case 'CheckBox':
               form.addCheckboxItem()
                   .setTitle(q.question)
+                  .setRequired(true)
                   .setHelpText(helpText)
                   .setChoiceValues(q.options);
               break;
