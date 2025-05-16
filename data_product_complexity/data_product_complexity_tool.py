@@ -2,6 +2,7 @@
 import yaml
 import argparse
 from excel_backend import write_excel_from_yaml
+from google_form_backend import write_google_form_from_yaml
 from validate_input import validate_yaml
 import sys
 
@@ -18,9 +19,9 @@ def main():
     parser.add_argument("-f", "--format", default="excel",
                         help="What to generate (default excel).")
     parser.add_argument("-o", "--output", default="data_product_complexity_tool.xlsx",
-                        help="Path to the output Excel file.")
+                        help="Path to the output Excel or Google form app script file.")
     parser.add_argument("--validate-only", action="store_true",
-                        help="Only validate the YAML, do not generate Excel.")
+                        help="Only validate the YAML, do not generate Excel or Google form app script.")
 
     args = parser.parse_args()
 
@@ -43,6 +44,10 @@ def main():
     if args.format == 'excel':
         write_excel_from_yaml(questionnaire, args.output)
         print(f"✅ Excel workbook created at: {args.output}")
+    
+    if args.format == 'google-form':
+        write_google_form_from_yaml(questionnaire, args.output)
+        print(f"✅ Google form created at: {args.output}")
 
 if __name__ == "__main__":
     main()
