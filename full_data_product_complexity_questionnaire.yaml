@@ -1,5 +1,5 @@
 data_product_complexity:
-  formTitle: Data Product Complexity Questionaire
+  formTitle: DP Complexity Estimator
   sections:
     - section: Data Product Information
       questions:
@@ -121,7 +121,7 @@ data_product_complexity:
             - Not sure
         - question: What is the volume of records (rows) that are typically updated per day?
           description: Capture the estimated data volume, for example 3000, or 5000000
-          questionType: ShortAnswer
+          questionType: DropDown
           options:
             - <1,000
             - 1,000-10,000
