@@ -2,6 +2,7 @@ import yaml
 from cerberus import Validator
 import pprint
 
+
 # Load and parse the YAML file
 def load_yaml_file(file_path):
     try:
@@ -43,8 +44,28 @@ schema = {
                                     "description": {"type": "string", "required": True},
                                     "options": {
                                         "type": "list",
-                                        "schema": {"type": "string"},
-                                        "required": False,  # Conditional logic will enforce
+                                        "schema": {
+                                            "type": "dict",
+                                            "schema": {
+                                                "optionText": {
+                                                    "type": "string",
+                                                    "required": True,
+                                                },
+                                                "score": {
+                                                    "type": "float",
+                                                    "min": 0.0,
+                                                    "max": 1.0,
+                                                    "required": True,
+                                                },
+                                            },
+                                            "required": False,  # Conditional logic will enforce
+                                        },
+                                    },
+                                    "weight": {
+                                        "type": "float",
+                                        "min": 0.0,
+                                        "max": 1.0,
+                                        "required": False,
                                     },
                                 },
                             },
@@ -90,7 +111,12 @@ def custom_validation(data):
                     errors.append(
                         f"'options' must be a non-empty list for {q_type} in question '{q.get('question')}'."
                     )
-                if q_type == "DropDown" and options and options[-1] != "Not sure" and section["section"] != "Data Product Information":
+                if (
+                    q_type == "DropDown"
+                    and options
+                    and options[-1]["optionText"] != "Not sure"
+                    and section["section"] != "Data Product Information"
+                ):
                     errors.append(
                         f"The last option for DropDown question '{q.get('question')}' must be 'Not sure'."
                     )

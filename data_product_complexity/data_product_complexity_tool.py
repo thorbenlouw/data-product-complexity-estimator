@@ -1,15 +1,19 @@
 
 import yaml
 import argparse
-from excel_backend import write_excel_from_yaml
-from google_form_backend import write_google_form_from_yaml
-from validate_input import validate_yaml
+from .excel_backend import ExcelBackend
+from .google_form_backend import write_google_form_from_yaml
+from .validate_input import validate_yaml
 import sys
 
-def load_questionnaire(yaml_path):
-    with open(yaml_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from .data_product_complexity import DataProductComplexityAssessment
 
+def load_questionnaire(yaml_path) -> DataProductComplexityAssessment:
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        d =  yaml.safe_load(f)
+        assessment = DataProductComplexityAssessment.from_dict(d["data_product_complexity"])
+        return assessment
+    
 def main():
     parser = argparse.ArgumentParser(
         description="Generate an Excel workbook from a data product complexity YAML specification."
@@ -42,7 +46,7 @@ def main():
     questionnaire = load_questionnaire(args.yaml_path)
 
     if args.format == 'excel':
-        write_excel_from_yaml(questionnaire, args.output)
+        ExcelBackend().render(questionnaire, args.output)
         print(f"✅ Excel workbook created at: {args.output}")
     
     if args.format == 'google-form':
