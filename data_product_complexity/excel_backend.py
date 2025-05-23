@@ -69,12 +69,12 @@ class CellLocationHelper:
     def notify_question_data_pos(self, question: Question, start_cell: Cell):
         num_options = len(question.options)
         ws_name = start_cell.parent.title
-        start_cell_for_options = f"{start_cell.column_letter}{start_cell.row+3}"
+        start_cell_for_options = f"{start_cell.column_letter}{start_cell.row}"
         end_cell_for_options = (
-            f"'{start_cell.column_letter}{start_cell.row+3+num_options}"
+            f"{start_cell.column_letter}{start_cell.row+num_options-1}"
         )
         end_call_for_scores = (
-            f"'{get_column_letter(start_cell.column+1)}{start_cell.row+3+num_options}"
+            f"{get_column_letter(start_cell.column+1)}{start_cell.row+num_options-1}"
         )
         self.q_to_options_range[question.question_id] = (
             f"'{ws_name}'!{start_cell_for_options}:{end_cell_for_options}"
@@ -103,20 +103,6 @@ def get_full_cell_address(cell):
     return f"{cell.parent.title}!{cell.coordinate}"
 
 
-def question_score_formula(options_cell_address, validation_formula) -> str:
-    """
-    validation_formula is the range given to the list DataValidation (a range of cells that form the valid options)
-
-    Finds the index of the option (that will form the rank value of the answer) unless it's the
-    last answer (always Not Sure). We have this so that if a question had options
-    A, B, C, D, E, Not sure
-    Then we return 2 if the answer is C, 0 if the answer is A, and 0.5 if the answer is Not sure (take the average val)
-    """
-    formula = f"=IF(MATCH({options_cell_address}, {validation_formula}, 0) - 1 = COUNTA({validation_formula})-1,0.5,(MATCH({options_cell_address}, {validation_formula}, 0) - 1)/(COUNTA({validation_formula})-1))"
-
-    return formula
-
-
 class DataSheetBuilder:
 
     _cell_location_helper: CellLocationHelper
@@ -135,12 +121,12 @@ class DataSheetBuilder:
         For each of the categories we create a hidden _data_categoryname tab that has the questions and options laid
         out like:
 
-        |             | Question_1 | Question_2 | .... | Question_n |
-        | Title       | xxxx       | xxxx       | .... | ...        |
+        |             | Question_1 | |  Question_2 | .... | Question_n |
+        | Title       | xxxx       | |xxxx       | .... | ...        |
         | Description | ....
         | NumOptions  | ....
-        | Option_1    | ...  |
-        | Option_2    | ...  |
+        | Option_1    | ...  |  score |
+        | Option_2    | ...  | score |
         | ...
         | Option_n.   | ...
 
@@ -151,14 +137,21 @@ class DataSheetBuilder:
         sheet_name = ws.title
         category = section.title
         questions = section.questions
-        headers = [""] + [f"Question_{x}" for x in range(1, len(questions) + 1)]
-        titles = ["Title"] + [q.question_text for q in questions]
-        num_questions = len(questions)
-        descriptions = ["Description"] + [q.description for q in questions]
+        headers = [""]
+        titles = ["Title"]
+        num_options_row = ["NumOptions"]
+        descriptions = ["Description"] 
+        for q in questions:
+            headers.append(f"Question_{q.question_id}")
+            headers.append("")
+            titles.append(q.question_text)
+            titles.append("")
+       
+            descriptions.append(q.description)
+            descriptions.append("")
+            num_options_row.append(len(q.options))
+            num_options_row.append("score")
         max_options = max(len(q.options) for q in questions)
-        num_options_row = ["NumOptions"] + [
-            len(q.options) for q in questions
-        ]
         option_rows = []
 
         for i in range(max_options):
@@ -166,12 +159,8 @@ class DataSheetBuilder:
             for q in questions:
                 opts = q.options
                 row.append(opts[i].option_text if i < len(opts) else "")
+                row.append(opts[i].score if i < len(opts) else "")
             option_rows.append(row)
-
-        for idx, q in enumerate(section.questions):
-            self._cell_location_helper.notify_question_data_pos(
-                question=q, start_cell=ws.cell(row=2, column=idx + 1)
-            )
 
         ws.append(headers)
         ws.append(titles)
@@ -179,12 +168,17 @@ class DataSheetBuilder:
         ws.append(num_options_row)
         for row in option_rows:
             ws.append(row)
+            
+        for idx, q in enumerate(section.questions, start=1):
+            self._cell_location_helper.notify_question_data_pos(
+                question=q, start_cell=ws.cell(row=5, column=idx*2)
+            )
 
         # apply_font_to_range(wb, f"{sheet_name}!A1:A{max_options+4}", bold=True)
         # apply_font_to_range(
         #     wb, f"{sheet_name}!A1:{get_column_letter(num_questions+1)}1", bold=True
         # )
-        for col in [get_column_letter(x) for x in range(1, num_questions + 1)]:
+        for col in [get_column_letter(x) for x in range(1, len(section.questions)*2 + 1)]:
             fit_col_width(ws, col)
 
     def build(self, wb: Workbook, product: DataProductComplexityAssessment):
@@ -205,34 +199,61 @@ class ScoreSheetBuilder:
         self._cell_location_helper = cell_location_helper
 
     def _formula_for_question(self, question: Question) -> str:
+        # For each question
+        #    Use the score for each answer based on the lookup 
+        #    Weight each question
+
         cell_addr = self._cell_location_helper.get_dropdown_pos_for_question(question)
         options_and_scores_range = (
             self._cell_location_helper.get_options_and_scores_range_for_question(
                 question
             )
         )
-        return f"=VLOOKUP({cell_addr}, {options_and_scores_range},2,FALSE)"
+        return f"=VLOOKUP({cell_addr}, {options_and_scores_range},2,FALSE)*{question.weight}"
+    
+    def _formula_for_section(self, section: Section, cursor_row: int) -> str:
+        # For each question, we've already worked out in _formula_for_question:
+        #    Use the score for each answer based on the lookup 
+        #    Weight each question
+        #    Answers start in col 3
+        # 
+        # Now we:
+        # Get the total
+        # SUM(row3:row3+len(section.questions))
+        num_questions = len(section.questions)
+        sum_range = f"C{cursor_row}:{get_column_letter(3+num_questions)}{cursor_row}"
+        # Normalise the total between 0 and 1
+        #   xxx/(sum(max_option_score for each question*question_weight) - sum(min_option_score for each question * question_weight))
+        sum_weighted_min_vals = 0.
+        sum_weighted_max_vals = 0.
+        for question in section.questions:
+            min_value_for_question =  min(o.score for o in question.options) * question.weight
+            max_value_for_question = max(o.score for o in question.options) * question.weight
+            sum_weighted_min_vals += min_value_for_question 
+            sum_weighted_max_vals += max_value_for_question
+        divisor = sum_weighted_max_vals - sum_weighted_min_vals
+        # Bin into 1-5 int range
+        #   INT(sum_range/{divisor} * 5) + 1
+        formula = f"=INT((SUM({sum_range})- {sum_weighted_min_vals})/{divisor} * 4.999) + 1"
+        print(formula)
+        return formula
 
     def build(self, product: DataProductComplexityAssessment) -> None:
-        row = 2  # Start from row 2 to leave space for headers
 
         # Headers
-        ws_score.cell(row=1, column=1, value="Section")
-        ws_score.cell(row=1, column=2, value="Final Score (1–5)")
-        ws_score.cell(row=1, column=1).font = Font(bold=True)
-        ws_score.cell(row=1, column=2).font = Font(bold=True)
+        self._ws.cell(row=1, column=1, value="Section")
+        self._ws.cell(row=1, column=2, value="Final Score (1–5)")
+        self._ws.cell(row=1, column=1).font = Font(bold=True)
+        self._ws.cell(row=1, column=2).font = Font(bold=True)
+        
+        row = 2  # Start from row 2 to leave space for headers
 
-        for category in question_formulas.keys():
-            if category == "Data Product Information":
-                pass
-            else:
-                ws_score.cell(row=row, column=1, value=category)
-                for qidx, question in enumerate(question_formulas[category]):
-                    tmp_cell = ws_score.cell(row=row, column=3 + qidx)
-                    tmp_cell.value = question_formulas[category][qidx]
-                    # print(question_formulas[category][qidx])
-                avg_formula = f"=INT(AVERAGE(C{row}:{get_column_letter(len(question_formulas[category])+3)}{row}) * 5) + 1"
-                ws_score.cell(row=row, column=2).value = avg_formula
+        for section in product.scorable_sections:
+                self._ws.cell(row=row, column=1, value=section.title)
+                for qidx, question in enumerate(section.questions):
+                    tmp_cell = self._ws.cell(row=row, column=3 + qidx)
+                    tmp_cell.value = self._formula_for_question(question)
+                self._ws.cell(row=row, column=2).value = self._formula_for_section(section, row)
                 row += 1
 
         # Apply heatmap conditional formatting to column B
@@ -247,13 +268,13 @@ class ScoreSheetBuilder:
             end_value=5,
             end_color="FF0000",
         )
-        ws_score.conditional_formatting.add(f"B2:B{row - 1}", heatmap)
+        self._ws.conditional_formatting.add(f"B2:B{row - 1}", heatmap)
 
-        fit_col_width(worksheet=ws_score, col="A")
-        fit_col_width(worksheet=ws_score, col="B")
+        fit_col_width(worksheet=self._ws, col="A")
+        fit_col_width(worksheet=self._ws, col="B")
 
         for col_letter in [get_column_letter(x) for x in range(3, 30)]:
-            ws_score.column_dimensions[col_letter].hidden = True
+            self._ws.column_dimensions[col_letter].hidden = True
 
         chart = BarChart()
         chart.type = "bar"
@@ -267,8 +288,8 @@ class ScoreSheetBuilder:
         )  # Ensures horizontal gridlines are visible
 
         # Reference data
-        data_ref = Reference(ws_score, min_col=2, min_row=1, max_row=8)
-        categories_ref = Reference(ws_score, min_col=1, min_row=2, max_row=8)
+        data_ref = Reference(self._ws, min_col=2, min_row=1, max_row=8)
+        categories_ref = Reference(self._ws, min_col=1, min_row=2, max_row=8)
 
         chart.add_data(data_ref, titles_from_data=True)
         chart.set_categories(categories_ref)
@@ -288,7 +309,7 @@ class ScoreSheetBuilder:
         )
 
         # === Step 3: Insert Chart into Sheet ===
-        ws_score.add_chart(chart, "H1")  # Center-ish position
+        self._ws.add_chart(chart, "H1")  # Center-ish position
 
 
 class QuestionnaireSheetBuilder:
@@ -332,7 +353,7 @@ class QuestionnaireSheetBuilder:
         if options:
             dv = DataValidation(
                 type="list",
-                formula1=f'"{self._clh.get_options_range_for_question(question=question)}"',
+                formula1=f"={self._clh.get_options_range_for_question(question=question)}",
                 showDropDown=False,
             )
             dropdown_cell = self._ws.cell(
@@ -344,7 +365,7 @@ class QuestionnaireSheetBuilder:
             dv.add(dropdown_cell)
 
             # Default to Not sure option
-            if "Not sure" in options:
+            if "Not sure" in [o.option_text for o in options]:
                 dropdown_cell.value = "Not sure"
         
         
